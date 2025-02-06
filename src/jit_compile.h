@@ -6443,6 +6443,7 @@ compile (
 
   switch ( e->inst.name )
     {
+    case IA32_AAD: compile_aam_like ( e, p, BC_AAD ); break;
     case IA32_AAM: compile_aam_like ( e, p, BC_AAM ); break;
     case IA32_ADC32: compile_add32_like ( e, p, false, true, true ); break;
     case IA32_ADC16: compile_add16_like ( e, p, false, true, true ); break;

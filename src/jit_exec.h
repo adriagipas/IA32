@@ -8273,6 +8273,11 @@ exec_inst (
       case BC_XOR16: res16= op16[0] ^ op16[1]; break;
       case BC_XOR8: res8= op8[0] ^ op8[1]; break;
         // --> Altres
+      case BC_AAD:
+        l_AL= (uint8_t) ((((uint16_t) l_AH)*((uint16_t) op8[0])
+                          + ((uint16_t) l_AL))&0xFF);
+        l_AH= 0;
+        break;
       case BC_AAM:
         if ( op8[0] != 0 )
           {

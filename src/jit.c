@@ -1065,6 +1065,7 @@ enum {
   BC_XOR16,
   BC_XOR8,
   // --> Altres
+  BC_AAD,
   BC_AAM,
   BC_BSF32,
   BC_BSF16,
@@ -4505,6 +4506,10 @@ print_page (
         case BC_XOR32: fprintf ( f, "res32= op32[0] ^ op32[1]\n" ); break;
         case BC_XOR16: fprintf ( f, "res16= op16[0] ^ op16[1]\n" ); break;
         case BC_XOR8: fprintf ( f, "res8= op8[0] ^ op8[1]\n" ); break;
+        case BC_AAD:
+          fprintf ( f, "AL= (AL+AH*%d)&0xFF; AH= 0\n", p->v[n+1] );
+          ++n;
+          break;
         case BC_AAM:
           fprintf ( f, "tmp8= AL; AH= tmp8/%d; res8= AL= tmp8%%%d\n",
                     p->v[n+1], p->v[n+1] );
