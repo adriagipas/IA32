@@ -8274,8 +8274,8 @@ exec_inst (
       case BC_XOR8: res8= op8[0] ^ op8[1]; break;
         // --> Altres
       case BC_AAD:
-        l_AL= (uint8_t) ((((uint16_t) l_AH)*((uint16_t) op8[0])
-                          + ((uint16_t) l_AL))&0xFF);
+        l_AL= res8= (uint8_t) ((((uint16_t) l_AH)*((uint16_t) op8[0])
+                                + ((uint16_t) l_AL))&0xFF);
         l_AH= 0;
         break;
       case BC_AAM:
@@ -8999,6 +8999,7 @@ exec_inst (
           { exception ( jit ); goto stop; }
         else
           {
+            op32[0]= l_EAX; // <-- Comparació
             res32= (uint32_t) ((int32_t) l_EAX - (int32_t) op32[1]);
             if ( l_EFLAGS&DF_FLAG ) { l_EDI-= 4; }
             else                    { l_EDI+= 4; }
@@ -9009,6 +9010,7 @@ exec_inst (
           { exception ( jit ); goto stop; }
         else
           {
+            op16[0]= l_AX;
             res16= (uint16_t) ((int16_t) l_AX - (int16_t) op16[1]);
             if ( l_EFLAGS&DF_FLAG ) { l_EDI-= 2; }
             else                    { l_EDI+= 2; }
@@ -9019,6 +9021,7 @@ exec_inst (
           { exception ( jit ); goto stop; }
         else
           {
+            op8[0]= l_AL;
             res8= (uint8_t) ((int8_t) l_AL - (int8_t) op8[1]);
             if ( l_EFLAGS&DF_FLAG ) { --l_EDI; }
             else                    { ++l_EDI; }
@@ -9030,6 +9033,7 @@ exec_inst (
           { exception ( jit ); goto stop; }
         else
           {
+            op32[0]= l_EAX;
             res32= (uint32_t) ((int32_t) l_EAX - (int32_t) op32[1]);
             if ( l_EFLAGS&DF_FLAG ) { l_DI-= 4; }
             else                    { l_DI+= 4; }
@@ -9041,6 +9045,7 @@ exec_inst (
           { exception ( jit ); goto stop; }
         else
           {
+            op16[0]= l_AX;
             res16= (uint16_t) ((int16_t) l_AX - (int16_t) op16[1]);
             if ( l_EFLAGS&DF_FLAG ) { l_DI-= 2; }
             else                    { l_DI+= 2; }
@@ -9052,6 +9057,7 @@ exec_inst (
           { exception ( jit ); goto stop; }
         else
           {
+            op8[0]= l_AL;
             res8= (uint8_t) ((int8_t) l_AL - (int8_t) op8[1]);
             if ( l_EFLAGS&DF_FLAG ) { --l_DI; }
             else                    { ++l_DI; }
