@@ -4913,8 +4913,8 @@ switch_task (
   
   uint8_t dpl,tmp8;
   uint16_t tmp16;
-  uint32_t stype,off,rpl,tmp32,addr,eflags_tmp;
-  seg_desc_t desc;
+  uint32_t stype,stype_tmp,off,rpl,tmp32,addr,eflags_tmp,elimit;
+  seg_desc_t desc,desc_tmp;
   IA32_SegmentRegister tmp_seg;
   IA32_CPU *l_cpu;
   
@@ -5064,38 +5064,39 @@ switch_task (
   if ( (tmp16&0xFFFC) == 0 ) { l_LDTR.h.isnull= true; l_LDTR.v= tmp16; }
   else
     {
-      printf("TODO SWITCH_TASK LDTR\n");
-      exit(EXIT_FAILURE);
-      /*
-      if ( int_read_segment_descriptor ( INTERP, tmp16, &desc_tmp,
-                                         ext, true ) != 0 )
-        return -1;
-      LDTR.h.isnull= false;
+      if ( !int_read_segment_descriptor ( jit, tmp16, &desc_tmp,
+                                          ext, true ) )
+        return false;
+      l_LDTR.h.isnull= false;
+      /* <-- No faig comprovacions adiccionals
       cpl= CPL;
       if ( cpl != 0 ) goto gp_exc;
-      stype= SEG_DESC_GET_STYPE ( desc );
+      */
+      stype_tmp= SEG_DESC_GET_STYPE ( desc_tmp );
       // NOTA!!! no comprova SegmentDescriptor(DescriptorType) (flag
       // S) sols comprova SegmentDescriptor(Type)
-      if ( (stype&0xf) != 0x02 ) goto excp_gp_sel;
-      if ( !SEG_DESC_IS_PRESENT ( desc ) )
+      if ( (stype_tmp&0xf) != 0x02 ) goto excp_gp_sel_ldtr;
+      if ( !SEG_DESC_IS_PRESENT ( desc_tmp ) )
         {
-          EXCEPTION_SEL ( EXCP_NP, selector );
-          return;
+          printf("TODO 0 - RECOVER EXCEPTION_TASK_SWITCH\n");exit(EXIT_FAILURE);
+          EXCEPTION_SEL ( EXCP_NP, tmp16 );
+          return false;
         }
       // Carrega (No faig el que es fa normalment perquè es LDTR, sols
       // el rellevant per a LDTR).
-      LDTR.h.lim.addr=
-        (desc.w1>>16) | ((desc.w0<<16)&0x00FF0000) | (desc.w0&0xFF000000);
-      elimit= (desc.w0&0x000F0000) | (desc.w1&0x0000FFFF);
-      if ( SEG_DESC_G_IS_SET ( desc ) )
+      l_LDTR.h.lim.addr=
+        (desc_tmp.w1>>16) |
+        ((desc_tmp.w0<<16)&0x00FF0000) |
+        (desc_tmp.w0&0xFF000000);
+      elimit= (desc_tmp.w0&0x000F0000) | (desc_tmp.w1&0x0000FFFF);
+      if ( SEG_DESC_G_IS_SET ( desc_tmp ) )
         {
           elimit<<= 12;
           elimit|= 0xFFF;
         }
-      LDTR.v= selector;
-      LDTR.h.lim.firstb= 0;
-      LDTR.h.lim.lastb= elimit;
-      */
+      l_LDTR.v= tmp16;
+      l_LDTR.h.lim.firstb= 0;
+      l_LDTR.h.lim.lastb= elimit;
     }
   if ( jit->_mem_readl32 ( jit, l_TR.h.lim.addr + 32,
                            &l_EIP, true, true ) != 0 )
@@ -5176,18 +5177,22 @@ switch_task (
   
   return true;
 
+ excp_gp_sel_ldtr:
+  printf("TODO 1 - RECOVER EXCEPTION_TASK_SWITCH\n");exit(EXIT_FAILURE);
+  EXCEPTION_SEL ( EXCP_GP, tmp16 );
+  return false;
  excp_np_error:
-  printf("TODO - RECOVER EXCEPTION_TASK_SWITCH\n");exit(EXIT_FAILURE);
+  printf("TODO 2 - RECOVER EXCEPTION_TASK_SWITCH\n");exit(EXIT_FAILURE);
   EXCEPTION_ERROR_CODE ( EXCP_NP,
                          int_error_code ( selector&0xFFFC, 0, ext ) );
   return false;
  excp_gp_error:
-  printf("TODO - RECOVER EXCEPTION_TASK_SWITCH\n");exit(EXIT_FAILURE);
+  printf("TODO 3 - RECOVER EXCEPTION_TASK_SWITCH\n");exit(EXIT_FAILURE);
   EXCEPTION_ERROR_CODE ( EXCP_GP,
                          int_error_code ( selector&0xFFFC, 0, ext ) );
   return false;
  excp_ts_error:
-  printf("TODO - RECOVER EXCEPTION_TASK_SWITCH\n");exit(EXIT_FAILURE);
+  printf("TODO 4 - RECOVER EXCEPTION_TASK_SWITCH\n");exit(EXIT_FAILURE);
   EXCEPTION_ERROR_CODE ( EXCP_TS,
                          int_error_code ( selector&0xFFFC, 0, ext ) );
   return false;
