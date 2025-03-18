@@ -5185,8 +5185,9 @@ compile_ins (
       // Operació
       switch ( e->inst.name )
         {
-        case IA32_INS32: add_word ( p, BC_INS32_ADDR16 ); break;
+        case IA32_INS8: add_word ( p, BC_INS8_ADDR16 ); break;
         case IA32_INS16: add_word ( p, BC_INS16_ADDR16 ); break;
+        case IA32_INS32: add_word ( p, BC_INS32_ADDR16 ); break;
         default:
           fprintf ( FERROR,
                     "[EE] jit.c - compile_ins addr16: Instrucció desconeguda"

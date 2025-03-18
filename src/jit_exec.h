@@ -8874,6 +8874,20 @@ exec_inst (
           }
         else { exception ( jit ); goto stop; }
         break;
+      case BC_INS8_ADDR16:
+        if ( io_check_permission ( jit, l_DX, 1 ) )
+          {
+            res8= jit->port_read8 ( jit->udata, l_DX );
+            if ( jit->_mem_write8 ( jit, l_P_ES, (uint32_t) l_DI, res8 ) != 0 )
+              { exception ( jit ); goto stop; }
+            else
+              {
+                if ( l_EFLAGS&DF_FLAG ) { --l_DI; }
+                else                    { ++l_DI; }
+              }
+          }
+        else { exception ( jit ); goto stop; }
+        break;
       case BC_LODS32_ADDR32:
         l_EAX= res32;
         if ( l_EFLAGS&DF_FLAG ) { l_ESI-= 4; }

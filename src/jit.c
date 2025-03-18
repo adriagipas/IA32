@@ -1146,6 +1146,7 @@ enum {
   BC_INS8_ADDR32,
   BC_INS32_ADDR16,
   BC_INS16_ADDR16,
+  BC_INS8_ADDR16,
   BC_LODS32_ADDR32,
   BC_LODS16_ADDR32,
   BC_LODS32_ADDR16,
@@ -4766,6 +4767,10 @@ print_page (
         case BC_INS16_ADDR16:
           fprintf ( f, "WRITE16(ES:DI,PORT_READ16(DX));"
                     " if(DF) {DI-=2} else {DI+=2}\n" );
+          break;
+        case BC_INS8_ADDR16:
+          fprintf ( f, "WRITE8(ES:DI,PORT_READ8(DX));"
+                    " if(DF) {--DI} else {++DI}\n" );
           break;
         case BC_LODS32_ADDR32:
           fprintf ( f, "EAX= res32; if(DF) {ESI-=4} else {ESI+=4}\n" );
